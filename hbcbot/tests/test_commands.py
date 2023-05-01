@@ -117,7 +117,7 @@ class TestUntappd(unittest.TestCase):
             "UNTAPPD_CLIENT_SECRET": "mock_client_secret",
         },
     )
-    def test_homebrew_beer(self, mock_env, mock_get):
+    def test_homebrew_beer(self, mock_get):
         expected_result = "https://untappd.com/beer/123"
         mock_response_data = {
             "response": {
