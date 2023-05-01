@@ -56,12 +56,19 @@ class TestUntappd(unittest.TestCase):
     )
     def test_untappd_with_invalid_input(self, mock_get):
         # Mock the response from the API
-        expected_data = {}
-        mock_get.return_value.status_code = 200
-        mock_get.return_value.json.return_value = expected_data
+        expected_data = {
+            "response": {
+                "beers": {"count": 0, "items": []},
+                "homebrew": {"count": 1, "items": [{"beer": {"bid": "123"}}]},
+            }
+        }
+        mock_response = requests.Response()
+        mock_response.status_code = 200
+        mock_response.json = lambda: expected_data
+        mock_get.return_value = mock_response
 
         # Test the function with invalid input
-        args = "Invalid Beer Name"
+        args = "Gramlyn's Mild"
         expected_output = "Type in beer name accurately"
         self.assertEqual(commands.untappd(args), expected_output)
 
@@ -94,7 +101,7 @@ class TestUntappd(unittest.TestCase):
 
     @patch("hbcbot.commands.requests.get")
     @patch(
-        "hbcbot.commands.os.environ",
+        "os.environ",
         {"UNTAPPD_CLIENT_ID": "client_id", "UNTAPPD_CLIENT_SECRET": "client_secret"},
     )
     def test_encode_args(self, mock_get):
@@ -111,17 +118,17 @@ class TestUntappd(unittest.TestCase):
             "UNTAPPD_CLIENT_SECRET": "mock_client_secret",
         },
     )
-    def test_homebrew_beer(self, mock_get):
+    def test_homebrew_beer(self, mock_env, mock_get):
         expected_result = "https://untappd.com/beer/123"
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_data = {
+        mock_response_data = {
             "response": {
                 "beers": {"count": 0, "items": []},
                 "homebrew": {"count": 1, "items": [{"beer": {"bid": "123"}}]},
             }
         }
-        mock_response.json.return_value = mock_data
+        mock_response = requests.Response()
+        mock_response.status_code = 200
+        mock_response.json = lambda: mock_response_data
         mock_get.return_value = mock_response
         result = commands.untappd("mutedog palatki saison")
         self.assertEqual(result, expected_result)
