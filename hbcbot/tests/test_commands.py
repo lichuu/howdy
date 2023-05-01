@@ -112,7 +112,7 @@ class TestUntappd(unittest.TestCase):
         mock_get.assert_called_once_with(expected_url)
 
     @patch("hbcbot.commands.requests.get")
-    @patch.dict(
+    @patch(
         "os.environ",
         {
             "UNTAPPD_CLIENT_ID": "mock_client_id",
