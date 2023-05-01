@@ -125,9 +125,10 @@ def untappd(args):
         try:
             bid = data["response"]["beers"]["items"][0]["beer"]["bid"]
         except IndexError:
-            if data["response"]["homebrew"]:
-                bid = data["response"]["homebrew"]["items"][0]["beer"]["bid"]
-            else:
+            try:
+                if data["response"]["homebrew"]:
+                    bid = data["response"]["homebrew"]["items"][0]["beer"]["bid"]
+            except (KeyError, IndexError):
                 return "Type in beer name accurately"
         return f"https://untappd.com/beer/{bid}"
     else:
