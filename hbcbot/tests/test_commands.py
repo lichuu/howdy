@@ -102,3 +102,35 @@ class TestUntappd(unittest.TestCase):
         expected_url = f"https://api.untappd.com/v4/search/beer?q={urllib.parse.quote_plus(args)}&client_id=client_id&client_secret=client_secret"
         commands.untappd(args)
         mock_get.assert_called_once_with(expected_url)
+
+    @patch("hbcbot.commands.requests.get")
+    @patch(
+        "hbcbot.commands.os.environ",
+        {"UNTAPPD_CLIENT_ID": "client_id", "UNTAPPD_CLIENT_SECRET": "client_secret"},
+    )
+    def test_homebrew_beer(self, mock_env, mock_get):
+        expected_result = "https://untappd.com/beer/123"
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_data = {
+            "response": {
+                "beers": {
+                    "count": 0,
+                    "items": []
+                },
+                "homebrew": {
+                    "count": 1,
+                    "items": [
+                        {
+                            "beer": {
+                                "bid": "123"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        mock_response.json.return_value = mock_data
+        mock_get.return_value = mock_response
+        result = commands.untappd("mutedog palatki saison")
+        self.assertEqual(result, expected_result)
