@@ -104,30 +104,21 @@ class TestUntappd(unittest.TestCase):
         mock_get.assert_called_once_with(expected_url)
 
     @patch("hbcbot.commands.requests.get")
-    @patch(
-        "hbcbot.commands.os.environ",
-        {"UNTAPPD_CLIENT_ID": "client_id", "UNTAPPD_CLIENT_SECRET": "client_secret"},
+    @patch.dict(
+        "os.environ",
+        {
+            "UNTAPPD_CLIENT_ID": "mock_client_id",
+            "UNTAPPD_CLIENT_SECRET": "mock_client_secret",
+        },
     )
-    def test_homebrew_beer(self, mock_env, mock_get):
+    def test_homebrew_beer(self, mock_get):
         expected_result = "https://untappd.com/beer/123"
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_data = {
             "response": {
-                "beers": {
-                    "count": 0,
-                    "items": []
-                },
-                "homebrew": {
-                    "count": 1,
-                    "items": [
-                        {
-                            "beer": {
-                                "bid": "123"
-                            }
-                        }
-                    ]
-                }
+                "beers": {"count": 0, "items": []},
+                "homebrew": {"count": 1, "items": [{"beer": {"bid": "123"}}]},
             }
         }
         mock_response.json.return_value = mock_data
