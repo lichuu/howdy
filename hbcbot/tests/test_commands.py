@@ -59,17 +59,15 @@ class TestUntappd(unittest.TestCase):
         # Mock the response from the API
         expected_data = {
             "response": {
-                "beers": {"count": 0, "items": []},
-                "homebrew": {"count": 1, "items": [{"beer": {"bid": "123"}}]},
+                "beers": {"items": []},
+                "homebrew": {"items": []},
             }
         }
-        mock_response = requests.Response()
-        mock_response.status_code = 200
-        mock_response.json = lambda: expected_data
+        mock_response = Mock(status_code=200, json=lambda: expected_data)
         mock_get.return_value = mock_response
 
         # Test the function with invalid input
-        args = "Gramlyn's Mild"
+        args = "Invalid Beer Name"
         expected_output = "Type in beer name accurately"
         self.assertEqual(commands.untappd(args), expected_output)
 
